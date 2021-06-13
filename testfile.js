@@ -66,3 +66,18 @@ d3.csv("riot_champion.csv",function(d){
         .style("fill", "#69b3a2")
 
 });
+
+
+function statPerLevel(data, stat, statPerLevel) {
+  let statPerLevelValue = 0
+  let statArray = []
+
+  for (var i=0; i < 18; i++) {
+      statPerLevelValue = stat + (i * statPerLevel)
+      statArray.push(statPerLevelValue)
+          
+      }
+      statDict[data.name] = statArray
+      console.log(statDict) 
+      return statDict 
+}
