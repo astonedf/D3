@@ -1,17 +1,22 @@
 // set the dimensions and margins of the graph
-var margin = {top:20, right:20, bottom:30, left:50},
+var margin = {top:20, right:20, bottom:30, left:70},
     width = 600 - margin.left - margin.right, height = 400 - margin.top - margin.bottom;
 
 let myData
 let names = []
 let statDict = {}
+let tempDict = {}
 let levels = new Array(19).keys()
 let lastSelectChamp1 = "Garen"
 let lastSelectChamp2 = "Ahri"
+let domains = {"stats.attackdamage": 150, "armor": 120, "health": 2100 }
+let yAxis
+let circle
+let dot
 
 // set the ranges
-var x = d3.scaleBand().range([0,width]);
-var y = d3.scaleLinear().range([height,0]);
+let x = d3.scaleBand().range([0,width]);
+let y = d3.scaleLinear().range([height,0]);
 
 // define the line
 var valueline = d3
@@ -37,7 +42,7 @@ let svg = d3
     .attr("height", height + margin.top + margin.bottom + 20)
     .append("g").attr("transform","translate("+ margin.left +","+ margin.top +")");
 
-// Get the data
+// Get the data and draws the first example (Garen vs. Ahri)
 d3.csv("riot_champion.csv").then(function(data) {
 
    
@@ -45,13 +50,13 @@ d3.csv("riot_champion.csv").then(function(data) {
 
     myData = data
     // format the data
-    data.forEach(function(d) {
+    myData.forEach(function(d) {
         d.name = d.name
         d.att = +d["stats.attackdamage"]
         d.attPerLevel = +d["stats.attackdamageperlevel"]
 
         statPerLevel(d, "stats.attackdamage", "stats.attackdamageperlevel", statDict)
-        //statPerLevel(d, "stats.armor", "stats.armorperlevel", statDict)
+        //statPerLevel(d, "stats.armor", "stats.armorperlevel", tempDict)
 
         //let statPerLevel = 0
         //let statList = []
@@ -76,7 +81,8 @@ d3.csv("riot_champion.csv").then(function(data) {
     // Scale the range of the data
     names = data.map(function(d) {return d.name; })
     x.domain(levels);
-    y.domain([d3.min(data,function(d) {return d.att; }), 150]);
+    //[d3.min(data,function(d) {return d.att; })
+    domainY = y.domain([0, 150]);
 
     
 
@@ -95,7 +101,7 @@ d3.csv("riot_champion.csv").then(function(data) {
         .attr("d", valueline2);
 
           // add the dots with tooltips
-    svg.selectAll("circle")
+    circle = svg.selectAll("circle")
   .data(statDict["Garen"])
     .enter().append("circle")
   .attr("r", 5)
@@ -106,7 +112,7 @@ d3.csv("riot_champion.csv").then(function(data) {
     div.transition()
       .duration(200)
       .style("opacity", .9);
-    div.html("Level : " + d.level + "<br/>" + d["stats.attackdamage"])
+    div.html("Garen <br/>" + "Level : " + d.level + "<br/>" + d["stats.attackdamage"])
       .style("left", (event.pageX) + "px")
       .style("top", (event.pageY - 28) + "px");
     })
@@ -117,7 +123,7 @@ d3.csv("riot_champion.csv").then(function(data) {
     });
 
 
-    svg.selectAll("dot")
+    dot = svg.selectAll("dot")
   .data(statDict["Ahri"])
     .enter().append("circle")
   .attr("r", 5)
@@ -128,7 +134,7 @@ d3.csv("riot_champion.csv").then(function(data) {
     div.transition()
       .duration(200)
       .style("opacity", .9);
-    div.html("Level : " + d.level + "<br/>" + d["stats.attackdamage"])
+    div.html("Ahri <br/>" + "Level : " + d.level + "<br/>" + d["stats.attackdamage"])
       .style("left", (event.pageX) + "px")
       .style("top", (event.pageY - 28) + "px");
     })
@@ -140,12 +146,12 @@ d3.csv("riot_champion.csv").then(function(data) {
         
 
 // Add the X Axis
-    svg.append("g")
+let xAxis = svg.append("g")
         .attr("transform","translate(0,"+ height +")")
         .call(d3.axisBottom(x));
         
 // Add the Y Axis
-    svg.append("g").call(d3.axisLeft(y));
+yAxis = svg.append("g").call(d3.axisLeft(y));
 
 
   svg.append("text")
@@ -183,44 +189,70 @@ d3.csv("riot_champion.csv").then(function(data) {
 
 
 function showChampionStats(){
-    let champName = document.getElementById("myInput").value
-    lastSelectChamp1 = champName
-    // if a non-empty string has been submitted
-    if (champName) {
-        var existingResult = true
-
-        let selectedChamp = getChampionStats(champName)
-        console.log(selectedChamp.name)
-
-        document.getElementById("ChampionSelected1").src = "ChampionIcons/" + selectedChamp.name + ".png"
-        document.getElementById("champName1").innerHTML = selectedChamp.name
-
-        svg.select("path#line1")
-        .data([statDict[selectedChamp.name]])
-        .attr("class","line")
-        .attr("d", valueline);
-        // make the DIV where the search result appears visible
-        //var x = document.getElementById("searchResult")
-        //if (x.style.display === 'none') {
-        //    x.style.display = 'block'
-        //    existingResult = false
-        //}
-
-        removeDots()
-        createNewDots(selectedChamp.name, lastSelectChamp2)
-
-        
-
-        
-
+    let champName
+    if (document.getElementById("myInput").value) {
+        champName = document.getElementById("myInput").value
     } else {
-        pass
-        // display a message when searched word is not in the lexicon
-        //document.getElementById("searchResult").innerHTML = "Please enter a word used in Auchinleck Manuscript"
-        //d3.select('#svgPie').style('display', 'none')
-        //d3.select('#svgLolli').style('display', 'none')
-        //d3.select('#note3').style('display', 'none')
+        champName = lastSelectChamp1
     }
+    
+// if a non-empty string has been submitted
+
+    lastSelectChamp1 = champName
+    var existingResult = true
+
+    let selectedChamp = getChampionStats(champName)
+    console.log(selectedChamp.name)
+
+    document.getElementById("ChampionSelected1").src = "ChampionIcons/" + selectedChamp.name + ".png"
+    document.getElementById("champName1").innerHTML = selectedChamp.name
+
+    const rbs = document.querySelectorAll('input[name="inlineRadioOptions"]');
+    let selectedValue;
+    for (const rb of rbs) {
+        if (rb.checked) {
+            selectedValue = rb.value;
+            break;
+        }
+    }
+
+    removeDots()
+
+    y.domain([0, domains[selectedValue]]);
+
+    yAxis.transition().duration(1000).call(d3.axisLeft(y))
+
+    
+
+    var valueline3 = d3
+    .line()
+    .x(function(d) {return x(d.level); })
+    .y(function(d) {return y(d[selectedValue]); });
+
+    svg.select("path#line1")
+    .data([statDict[lastSelectChamp1]])
+    .transition()
+    .duration(1000)
+    .attr("class","line")
+    .attr("d", valueline3);
+
+    svg.select("path#line2")
+    .data([statDict[lastSelectChamp2]])
+    .transition()
+    .duration(1000)
+    .attr("class","line")
+    .attr("d", valueline3);
+
+    createNewDots(lastSelectChamp1, lastSelectChamp2)
+    // make the DIV where the search result appears visible
+    //var x = document.getElementById("searchResult")
+    //if (x.style.display === 'none') {
+    //    x.style.display = 'block'
+    //    existingResult = false
+    //}
+ 
+
+    
 }
 
 function removeDots(){
@@ -229,18 +261,30 @@ function removeDots(){
 }
 
 function createNewDots(name, name2){
-    svg.selectAll("circle")
+
+        const rbs = document.querySelectorAll('input[name="inlineRadioOptions"]');
+        let selectedValue;
+        for (const rb of rbs) {
+            if (rb.checked) {
+                selectedValue = rb.value;
+                break;
+            }
+        }
+
+    
+        
+    circle = svg.selectAll("circle")
             .data(statDict[name])
             .enter().append("circle")
             .attr("r", 5)
             .attr("cx", function(d) { return x(d.level) })
-            .attr("cy", function(d) { return y(d["stats.attackdamage"]) })
+            .attr("cy", function(d) { return y(d[selectedValue]) })
             .attr("id", "circles")
             .on("mouseover", function(event,d) {
                 div.transition()
                     .duration(200)
                     .style("opacity", .9);
-                div.html("Level : " + d.level + "<br/>" + d["stats.attackdamage"])
+                div.html(name + "<br/>" + "Level : " + d.level + "<br/>" + d[selectedValue])
                     .style("left", (event.pageX) + "px")
                     .style("top", (event.pageY - 28) + "px");
             })
@@ -249,18 +293,21 @@ function createNewDots(name, name2){
                     .duration(500)
                     .style("opacity", 0);
             });
-            svg.selectAll("dot")
+
+        circle.transition().duration(1000)
+
+    dot = svg.selectAll("dot")
             .data(statDict[name2])
               .enter().append("circle")
             .attr("r", 5)
             .attr("cx", function(d) { return x(d.level) })
-            .attr("cy", function(d) { return y(d["stats.attackdamage"]) })
+            .attr("cy", function(d) { return y(d[selectedValue]) })
             .attr("id", "dots")
             .on("mouseover", function(event,d) {
               div.transition()
                 .duration(200)
                 .style("opacity", .9);
-              div.html("Level : " + d.level + "<br/>" + d["stats.attackdamage"])
+              div.html(name2 + "<br/>" + "Level : " + d.level + "<br/>" + d[selectedValue])
                 .style("left", (event.pageX) + "px")
                 .style("top", (event.pageY - 28) + "px");
               })
@@ -269,44 +316,76 @@ function createNewDots(name, name2){
                 .duration(500)
                 .style("opacity", 0);
               });
+
+              dot.transition().duration(1000)
+}
+
+function radioAction(){
+    removeDots()
+    showChampionStats()
+    showChampionStats2()
 }
 
 function showChampionStats2(){
-    let champName = document.getElementById("myInput2").value
-    lastSelectChamp2 = champName
-    // if a non-empty string has been submitted
-    if (champName) {
-        var existingResult = true
-
-        let selectedChamp = getChampionStats(champName)
-        console.log(selectedChamp.name)
-
-        document.getElementById("ChampionSelected2").src = "ChampionIcons/" + selectedChamp.name + ".png"
-        document.getElementById("champName2").innerHTML = selectedChamp.name
-
-        svg.select("path#line2")
-        .data([statDict[selectedChamp.name]])
-        .attr("class","line")
-        .attr("d", valueline2);
-
-        removeDots()
-        createNewDots(lastSelectChamp1, selectedChamp.name)
-
-        // make the DIV where the search result appears visible
-        //var x = document.getElementById("searchResult")
-        //if (x.style.display === 'none') {
-        //    x.style.display = 'block'
-        //    existingResult = false
-        //}
-
+    let champName
+    if (document.getElementById("myInput2").value) {
+        champName = document.getElementById("myInput2").value
     } else {
-        pass
-        // display a message when searched word is not in the lexicon
-        //document.getElementById("searchResult").innerHTML = "Please enter a word used in Auchinleck Manuscript"
-        //d3.select('#svgPie').style('display', 'none')
-        //d3.select('#svgLolli').style('display', 'none')
-        //d3.select('#note3').style('display', 'none')
+        champName = lastSelectChamp2
     }
+    
+    
+    // if a non-empty string has been submitted
+
+    lastSelectChamp2 = champName
+    var existingResult = true
+
+    let selectedChamp = getChampionStats(champName)
+    console.log(selectedChamp.name)
+
+    document.getElementById("ChampionSelected2").src = "ChampionIcons/" + selectedChamp.name + ".png"
+    document.getElementById("champName2").innerHTML = selectedChamp.name
+
+    const rbs = document.querySelectorAll('input[name="inlineRadioOptions"]');
+    let selectedValue;
+    for (const rb of rbs) {
+        if (rb.checked) {
+            selectedValue = rb.value;
+            break;
+        }
+    }
+
+    removeDots()
+
+    var valueline3 = d3
+    .line()
+    .x(function(d) {return x(d.level); })
+    .y(function(d) {return y(d[selectedValue]); });
+
+    svg.select("path#line1")
+    .data([statDict[lastSelectChamp1]])
+    .transition()
+    .duration(1000)
+    .attr("class","line")
+    .attr("d", valueline3);
+
+    svg.select("path#line2")
+    .data([statDict[lastSelectChamp2]])
+    .transition()
+    .duration(1000)
+    .attr("class","line")
+    .attr("d", valueline3);
+    
+    createNewDots(lastSelectChamp1, lastSelectChamp2)
+
+    // make the DIV where the search result appears visible
+    //var x = document.getElementById("searchResult")
+    //if (x.style.display === 'none') {
+    //    x.style.display = 'block'
+    //    existingResult = false
+    //}
+
+    
 }
 
 function getChampionStats(champion) {
@@ -325,7 +404,11 @@ function statPerLevel(data, myStat, statPerLevel, dict) {
         for (var i=0; i < 18; i++) {
             let stat = new Object()
             statPerLevelValue = +data[myStat] + (i * +data[statPerLevel])
+            armorPerLevelValue = +data["stats.armor"] + (i * +data["stats.armorperlevel"])
+            healthPerLevelValue = +data["stats.hp"] + (i * +data["stats.hpperlevel"])
             stat[myStat] = statPerLevelValue.toFixed(2)
+            stat["armor"] = armorPerLevelValue.toFixed(2)
+            stat["health"] = healthPerLevelValue.toFixed(2)
             stat["level"] = i + 1
             //console.log(att)
             statList.push(stat)
@@ -333,8 +416,8 @@ function statPerLevel(data, myStat, statPerLevel, dict) {
         }
         //statList.push(att)
         dict[data.name] = statList 
-  }
 
+  }
 
 
 
