@@ -6,28 +6,64 @@
   stroke-width:2px;
 }
 
-.champDiv {
-  display: inline-block;
+#champDiv {
   text-align: center;
-  
+  margin: 0 auto;
+  width: 65%;
+}
+
+/* Style the top navigation bar */
+.navbar {
+  width: 100%;
+  overflow: hidden;
+  background-color: #333;
+  margin-bottom: 5px;
+}
+
+.navbar h1 {
+  color: #f2f2f2;
+  text-align: center;
+  padding: 14px 16px;
+  text-decoration: none;
+}
+
+#graph {
+  text-align: center;
+}
+
+.column {   
+  padding: 5px;
+  background-color: var(--bs-white);
+  margin: 0 auto;
+  width: 65%;
 }
 
 #champ1 {
-  margin: 10px;
+  height: 210px;
+  margin: 5px;
   vertical-align: top;
   display: inline-block;
   box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 2px 6px 2px;
-  border-radius: 5px;
+  border-radius: 3px;
+  padding: 5px;
+  background-color: var(--bs-white);
 }
 
 #champ2 {
-  margin: 10px;
+  height: 210px;
+  margin: 5px;
   vertical-align: top;
   display: inline-block;
   box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 2px 6px 2px;
-  border-radius: 5px;
+  border-radius: 3px;
+  padding: 5px;
+  background-color: var(--bs-white);
 }
 
+h2 {
+  margin: 2px;
+  font-size: 22px;
+}
 
 #champName1 {
   color: var(--bs-cyan);
@@ -47,7 +83,7 @@
 
 
 form {
-  margin: 10px;
+  margin: 5px;
   vertical-align: top;
 }
 
@@ -59,7 +95,7 @@ div.tooltip {
   height: 42px;
   padding: 2px;
   font: 12px sans-serif;
-  background: var(--bs-teal);
+  background: var(--bs-light);
   border: 0px;
   border-radius: 8px;
   pointer-events: none;
@@ -67,7 +103,8 @@ div.tooltip {
 
 * { box-sizing: border-box; }
 body {
-  font: 16px Arial;
+  font-family: Arial;
+  background: var(--bs-gray);
 }
 
 
@@ -118,9 +155,39 @@ input[type=button] {
   color: #ffffff;
 }
   
+footer {
+  padding: 2px;
+  font-size: 10px;
+  text-align: center;
+  background: #ddd;
+  margin-top: 5px;
+}
 
-
-
+@media only screen and (max-width: 768px) {
+  /* For mobile phones: */
+  .column {
+    width: 100%;
+  }
+  #champDiv {
+    width: 100%;
+    display: inline-block;
+  }
+  #champ1 {
+    width: 160px;
+    height: 230px;
+  }
+  #champ2 {
+    width: 160px;
+    height: 230px;
+  }
+  .navbar h1 {
+    font-size: 18px;
+    color: #f2f2f2;
+    text-align: center;
+    text-decoration: none;
+    padding: 5px;
+  }
+}
 
 
 /*!

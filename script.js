@@ -1,6 +1,3 @@
-// set the dimensions and margins of the graph
-var margin = {top:20, right:20, bottom:30, left:70},
-    width = 600 - margin.left - margin.right, height = 400 - margin.top - margin.bottom;
 
 let myData
 let names = []
@@ -13,6 +10,39 @@ let domains = {"stats.attackdamage": 150, "armor": 120, "health": 2100 }
 let yAxis
 let circle
 let dot
+let selectedValue
+let sizeX
+let sizeY
+let marginLeft
+let marginRight
+let namePosH
+let namePosW
+
+if (window.screen.width > 768) {
+    sizeY = window.screen.height/2;
+    sizeX = window.screen.width/2;
+    marginLeft = 60
+    namePosH = 0
+    namePosW = 20
+    marginRight = 77
+
+} else {
+    sizeY = window.screen.height/2
+    sizeX = window.screen.width
+    marginLeft = 35
+    namePosH = 60
+    namePosW = 70
+    marginRight = 50
+}
+
+
+// set the dimensions and margins of the graph
+var margin = {top:20, right:marginRight, bottom:30, left:marginLeft},
+    width = sizeX - margin.left - margin.right, height = sizeY - margin.top - margin.bottom;
+
+
+
+checkRadioValue()
 
 // set the ranges
 let x = d3.scaleBand().range([0,width]);
@@ -37,6 +67,7 @@ var valueline2 = d3
 // appends a 'group' element to 'svg'// moves the 'group' element to the top left margin
 let svg = d3
     .select("body")
+    .append("div").attr("class", "column").attr("id", "graph")
     .append("svg")
     .attr("width", width + margin.left + margin.right)
     .attr("height", height + margin.top + margin.bottom + 20)
@@ -153,7 +184,27 @@ let xAxis = svg.append("g")
 // Add the Y Axis
 yAxis = svg.append("g").call(d3.axisLeft(y));
 
+let calcHeight = y(statDict["Ahri"][17][selectedValue])+ namePosH
 
+svg.append("text")
+		.attr("transform", "translate(" + (width-namePosW) + "," + calcHeight + ")")
+		.attr("dy", ".35em")
+        .attr("id", "name1")
+		.attr("text-anchor", "start")
+		.style("fill", "var(--bs-orange)")
+		.text("Ahri");
+
+let calcHeight2 = y(statDict["Garen"][17][selectedValue]) + namePosH
+
+	svg.append("text")
+		.attr("transform", "translate(" + (width-namePosW) + "," + calcHeight2 + ")")
+		.attr("dy", ".35em")
+        .attr("id", "name2")
+		.attr("text-anchor", "start")
+		.style("fill", "var(--bs-cyan)")
+		.text("Garen");
+
+        if (window.screen.width > 768) {
   svg.append("text")
   .attr("transform", "rotate(-90)")
   .attr("y", 0 - margin.left)
@@ -161,6 +212,7 @@ yAxis = svg.append("g").call(d3.axisLeft(y));
   .attr("dy", "1em")
   .style("text-anchor", "middle")
   .text("Value");
+        }
 
   svg.append("text")             
       .attr("transform",
@@ -169,19 +221,6 @@ yAxis = svg.append("g").call(d3.axisLeft(y));
       .style("text-anchor", "middle")
       .text("Level");
 
-      /* svg.append("text")
-      .attr("transform", "translate(" + (width+3) + "," + y(statDict["Garen"][statDict["Garen"].length-1]) + ")")
-      .attr("dy", ".35em")
-      .attr("text-anchor", "end")
-      .style("fill", "red")
-      .text("Open");
-
-  svg.append("text")
-      .attr("transform", "translate(" + (width+3) + "," + y(statDict["Ahri"][statDict["Ahri"].length-1]) + ")")
-      .attr("dy", ".35em")
-      .attr("text-anchor", "end")
-      .style("fill", "steelblue")
-      .text("Close"); */
 
     autocomplete(document.getElementById("myInput"), names);
     autocomplete(document.getElementById("myInput2"), names);
@@ -204,11 +243,10 @@ function showChampionStats(){
     let selectedChamp = getChampionStats(champName)
     console.log(selectedChamp.name)
 
-    document.getElementById("ChampionSelected1").src = "ChampionIcons/" + selectedChamp.name + ".png"
+    document.getElementById("ChampionSelected1").src = "../ChampionIcons/" + selectedChamp.name + ".png"
     document.getElementById("champName1").innerHTML = selectedChamp.name
 
     const rbs = document.querySelectorAll('input[name="inlineRadioOptions"]');
-    let selectedValue;
     for (const rb of rbs) {
         if (rb.checked) {
             selectedValue = rb.value;
@@ -243,6 +281,31 @@ function showChampionStats(){
     .attr("class","line")
     .attr("d", valueline3);
 
+    let calcHeight = y(statDict[lastSelectChamp2][17][selectedValue]) + namePosH
+    let calcHeight2 = y(statDict[champName][17][selectedValue]) + namePosH
+
+    if (window.screen.width < 768 && calcHeight < calcHeight2) {
+        calcHeight -= 70
+    } 
+    else if (window.screen.width < 768 && calcHeight > calcHeight2) {
+        calcHeight2 -= 70
+    }
+
+    svg.select("text#name1")
+		.attr("transform", "translate(" + (width-namePosW) + "," + calcHeight + ")")
+		.attr("dy", ".35em")
+		.attr("text-anchor", "start")
+		.style("fill", "var(--bs-orange)")
+		.text(lastSelectChamp2);
+
+
+	svg.select("text#name2")
+		.attr("transform", "translate(" + (width-namePosW) + "," + calcHeight2 + ")")
+		.attr("dy", ".35em")
+		.attr("text-anchor", "start")
+		.style("fill", "var(--bs-cyan)")
+		.text(champName);
+
     createNewDots(lastSelectChamp1, lastSelectChamp2)
     // make the DIV where the search result appears visible
     //var x = document.getElementById("searchResult")
@@ -262,14 +325,7 @@ function removeDots(){
 
 function createNewDots(name, name2){
 
-        const rbs = document.querySelectorAll('input[name="inlineRadioOptions"]');
-        let selectedValue;
-        for (const rb of rbs) {
-            if (rb.checked) {
-                selectedValue = rb.value;
-                break;
-            }
-        }
+        checkRadioValue()
 
     
         
@@ -326,6 +382,16 @@ function radioAction(){
     showChampionStats2()
 }
 
+function checkRadioValue(){
+    const rbs = document.querySelectorAll('input[name="inlineRadioOptions"]');
+        for (const rb of rbs) {
+            if (rb.checked) {
+                selectedValue = rb.value;
+                break;
+            }
+        }
+}
+
 function showChampionStats2(){
     let champName
     if (document.getElementById("myInput2").value) {
@@ -343,17 +409,10 @@ function showChampionStats2(){
     let selectedChamp = getChampionStats(champName)
     console.log(selectedChamp.name)
 
-    document.getElementById("ChampionSelected2").src = "ChampionIcons/" + selectedChamp.name + ".png"
+    document.getElementById("ChampionSelected2").src = "../ChampionIcons/" + selectedChamp.name + ".png"
     document.getElementById("champName2").innerHTML = selectedChamp.name
 
-    const rbs = document.querySelectorAll('input[name="inlineRadioOptions"]');
-    let selectedValue;
-    for (const rb of rbs) {
-        if (rb.checked) {
-            selectedValue = rb.value;
-            break;
-        }
-    }
+    checkRadioValue()
 
     removeDots()
 
@@ -375,6 +434,31 @@ function showChampionStats2(){
     .duration(1000)
     .attr("class","line")
     .attr("d", valueline3);
+
+    let calcHeight = y(statDict[champName][17][selectedValue]) + namePosH
+    let calcHeight2 = y(statDict[lastSelectChamp1][17][selectedValue]) + namePosH
+
+    if (window.screen.width < 768 && calcHeight < calcHeight2) {
+        calcHeight -= 70
+    } else if (calcHeight > calcHeight2 && window.screen.width < 768) {
+        calcHeight2 -= 70
+    }
+
+    svg.select("text#name1")
+		.attr("transform", "translate(" + (width-namePosW) + "," + calcHeight + ")")
+		.attr("dy", ".35em")
+		.attr("text-anchor", "start")
+		.style("fill", "var(--bs-orange)")
+		.text(champName);
+
+        
+
+	svg.select("text#name2")
+		.attr("transform", "translate(" + (width-namePosW) + "," + calcHeight2 + ")")
+		.attr("dy", ".35em")
+		.attr("text-anchor", "start")
+		.style("fill", "var(--bs-cyan)")
+		.text(lastSelectChamp1);
     
     createNewDots(lastSelectChamp1, lastSelectChamp2)
 
@@ -397,6 +481,8 @@ function getChampionStats(champion) {
     }
 }
 
+
+//
 function statPerLevel(data, myStat, statPerLevel, dict) {
     let statPerLevelValue = 0
     let statList = []
@@ -420,13 +506,8 @@ function statPerLevel(data, myStat, statPerLevel, dict) {
   }
 
 
-
-
-
-
-
   
-
+// Search champion per name
 function autocomplete(input, array) {
     // Code taken from https://www.w3schools.com/howto/howto_js_autocomplete.asp
 

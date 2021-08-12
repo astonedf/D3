@@ -5,15 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="style.css">
     <title>LoL Champion Stats</title>
+    <link rel="icon" href="data:;base64,iVBORw0KGgo=" type="image/x-icon">
 </head>
 <nav class="navbar">
   <h1>League of Legends Champion Stats</h1>
 </nav>
 <body>
-  <div class="champDiv">
+  <div id="champDiv">
     <div id="champ1">
       <h2 id="champName1">Garen</h2>
-      <img src="championIcons/Garen.png" alt="ChampionSelected1" width="120" height="120" id="ChampionSelected1">
+      <img src="../championIcons/Garen.png" alt="ChampionSelected1" width="120" height="120" id="ChampionSelected1">
       <br>
       <form autocomplete="off" action="/action_page.php">
         <div class="autocomplete" style="width:140px;">
@@ -25,7 +26,7 @@
     <div id="champ2">
       <h2 id="champName2">Ahri</h2>
       
-      <img src="championIcons/Ahri.png" alt="ChampionSelected2" width="120" height="120" id="ChampionSelected2"> 
+      <img src="../championIcons/Ahri.png" alt="ChampionSelected2" width="120" height="120" id="ChampionSelected2"> 
       
       <br>
       
@@ -38,7 +39,7 @@
     </div>
   </div>
     <br>
-  <div>
+  <div class="column">
     <div class="form-check form-check-inline">
       <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio1" onclick="radioAction()" value="stats.attackdamage" checked>
       <label class="form-check-label" for="inlineRadio1">Attack Damage</label>
@@ -52,9 +53,9 @@
       <label class="form-check-label" for="inlineRadio3">Health</label>
     </div>
   </div>
-    <br>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/6.6.1/d3.min.js" ></script>
     <script src='https://cdnjs.cloudflare.com/ajax/libs/c3/0.7.9/c3.min.js'></script>
     <script src="script.js"></script>
+    <footer>© Riot Games, Inc. All rights reserved. 'Riot Games', 'League of Legends', and 'PvP.net' are trademarks, services marks, or registered trademarks of Riot Games, Inc. </footer>
 </body>
 </html>
