@@ -2,11 +2,11 @@
 let myData
 let names = []
 let statDict = {}
-let tempDict = {}
 let levels = new Array(19).keys()
 let lastSelectChamp1 = "Garen"
 let lastSelectChamp2 = "Ahri"
-let domains = {"stats.attackdamage": 150, "armor": 120, "health": 2100 }
+let domains = {"Attack Damage": 150, "Armor": 120, "Health": 2200, "Mana": 1200, "Magic Resist": 60, "HP Regen": 24 }
+let statName = Object.keys(domains)
 let yAxis
 let circle
 let dot
@@ -17,7 +17,11 @@ let marginLeft
 let marginRight
 let namePosH
 let namePosW
+let chartSvg
+let chartX
+let chartY
 
+// set different sizes and position depending on screen size (computer or mobile)
 if (window.screen.width > 768) {
     sizeY = window.screen.height/2;
     sizeX = window.screen.width/2;
@@ -35,36 +39,115 @@ if (window.screen.width > 768) {
     marginRight = 50
 }
 
-
 // set the dimensions and margins of the graph
 var margin = {top:20, right:marginRight, bottom:30, left:marginLeft},
     width = sizeX - margin.left - margin.right, height = sizeY - margin.top - margin.bottom;
 
+function createBarChart() {
+    // append the svg object to the body of the page
+    chartSvg = d3.select("#my_dataviz")
+    .append("svg")
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
+    .append("g")
+    .attr("transform", `translate(${margin.left},${margin.top})`);
 
+    const subgroups = ["champ1", "champ2"]
+// List of groups = species here = value of the first column called group -> I show them on the X axis
+const groups = statName
+console.log(groups)
+
+    // Add X axis
+    chartX = d3.scaleLinear()
+    .domain([0, 100])
+    .range([ 0, width ]);
+    chartSvg.append("g")
+    .call(d3.axisTop(chartX));
+
+    // Add Y axis
+    chartY = d3.scaleBand()
+    .domain(groups)
+    .range([0, height])
+    .padding([0.2])
+    chartSvg.append("g")
+    .call(d3.axisLeft(chartY));
+
+    // add the X gridlines
+    chartSvg.append("g")
+    .attr("class", "grid")
+    .call(d3.axisTop(chartX).ticks(10)
+        .tickSize(-height)
+        .tickFormat("")
+    )
+
+    // color palette = one color per subgroup
+    const color = d3.scaleOrdinal()
+    .domain(subgroups)
+    .range(['var(--bs-cyan)','var(--bs-orange)'])
+    
+    // Normalize the data -> sum of each group must be 100!
+    getChampionStats(lastSelectChamp1)
+    getChampionStats(lastSelectChamp2)
+    // Normalize the data -> sum of each group must be 100!
+    let champ1 = statDict[lastSelectChamp1]
+
+    console.log("champ1 ", champ1)
+    let champ2 = statDict[lastSelectChamp2]
+    let barData = []
+
+    for (var i=0; i < 6; i++) {
+        let barDataDict = {}
+        let tot = parseInt(champ1[0][statName[i]]) + parseInt(champ2[0][statName[i]])
+        console.log("tot", tot)
+        let champ1perc = parseInt(champ1[0][statName[i]])/parseInt(tot) * 100
+        let champ2perc = parseInt(champ2[0][statName[i]])/parseInt(tot) * 100
+        barDataDict["group"] = statName[i]
+        barDataDict["champ1"] = champ1perc
+        barDataDict["champ2"] = champ2perc
+        barData.push(barDataDict)
+
+    }
+    console.log(barData)
+    
+    
+    //stack the data? --> stack per subgroup
+    const stackedData = d3.stack()
+    .keys(subgroups)
+    (barData)
+
+    
+    
+}
 
 checkRadioValue()
 
 // set the ranges
-let x = d3.scaleBand().range([0,width]);
+let x = d3.scaleLinear().range([0,width - 30]);
 let y = d3.scaleLinear().range([height,0]);
+
+ // Set the domain of the data
+ x.domain([0, 18]);
+ // adapts the domain to the selected stat
+ y.domain([0, domains[selectedValue]]);
 
 // define the line
 var valueline = d3
     .line()
     .x(function(d) {return x(d.level); })
-    .y(function(d) {return y(d["stats.attackdamage"]); });
+    .y(function(d) {return y(d[selectedValue]); });
 
 var valueline2 = d3
     .line()
     .x(function(d) {return x(d.level); })
-    .y(function(d) {return y(d["stats.attackdamage"]); });
+    .y(function(d) {return y(d[selectedValue]); });
 
     var div = d3.select("body").append("div")
     .attr("class", "tooltip")
     .style("opacity", 0);
 
 // append the svg obgect to the body of the page
-// appends a 'group' element to 'svg'// moves the 'group' element to the top left margin
+// appends a 'group' element to 'svg'
+// moves the 'group' element to the top left margin
 let svg = d3
     .select("body")
     .append("div").attr("class", "column").attr("id", "graph")
@@ -87,35 +170,12 @@ d3.csv("riot_champion.csv").then(function(data) {
         d.attPerLevel = +d["stats.attackdamageperlevel"]
 
         statPerLevel(d, "stats.attackdamage", "stats.attackdamageperlevel", statDict)
-        //statPerLevel(d, "stats.armor", "stats.armorperlevel", tempDict)
-
-        //let statPerLevel = 0
-        //let statList = []
-
-        //for (var i=0; i < 18; i++) {
-          //  let att = new Object()
-            //statPerLevel = +d["stats.attackdamage"] + (i * +d["stats.attackdamageperlevel"])
-            //att["ad"] = statPerLevel
-            //att["level"] = i + 1
-            //console.log(att)
-            //statList.push(att)
-            
-        //}
-        //statList.push(att)
-        //statDict[d.name] = statList 
-        //console.log(statDict)
         
     });
     console.log(statDict)
-    console.log(statDict["Ahri"][0])
 
-    // Scale the range of the data
+    // creates a list of the champion names
     names = data.map(function(d) {return d.name; })
-    x.domain(levels);
-    //[d3.min(data,function(d) {return d.att; })
-    domainY = y.domain([0, 150]);
-
-    
 
     // Add the valueline 
     svg.append("path")
@@ -133,134 +193,217 @@ d3.csv("riot_champion.csv").then(function(data) {
 
           // add the dots with tooltips
     circle = svg.selectAll("circle")
-  .data(statDict["Garen"])
-    .enter().append("circle")
-  .attr("r", 5)
-  .attr("cx", function(d) { return x(d.level) })
-  .attr("cy", function(d) { return y(d["stats.attackdamage"]) })
-  .attr("id", "circles")
-  .on("mouseover", function(event,d) {
-    div.transition()
-      .duration(200)
-      .style("opacity", .9);
-    div.html("Garen <br/>" + "Level : " + d.level + "<br/>" + d["stats.attackdamage"])
-      .style("left", (event.pageX) + "px")
-      .style("top", (event.pageY - 28) + "px");
-    })
-  .on("mouseout", function(d) {
-    div.transition()
-      .duration(500)
-      .style("opacity", 0);
-    });
+        .data(statDict["Garen"])
+        .enter().append("circle")
+        .attr("r", 5)
+        .attr("cx", function(d) { return x(d.level) })
+        .attr("cy", function(d) { return y(d[selectedValue]) })
+        .attr("id", "circles")
+        .on("mouseover", function(event,d) {
+            div.transition()
+            .duration(200)
+            .style("opacity", .9);
+            div.html("Garen <br/>" + "Level : " + d.level + "<br/>" + d[selectedValue])
+            .style("left", (event.pageX) + "px")
+            .style("top", (event.pageY - 28) + "px");
+        })
+        .on("mouseout", function(d) {
+            div.transition()
+            .duration(500)
+            .style("opacity", 0);
+        });
 
 
     dot = svg.selectAll("dot")
-  .data(statDict["Ahri"])
-    .enter().append("circle")
-  .attr("r", 5)
-  .attr("cx", function(d) { return x(d.level) })
-  .attr("cy", function(d) { return y(d["stats.attackdamage"]) })
-  .attr("id", "dots")
-  .on("mouseover", function(event,d) {
-    div.transition()
-      .duration(200)
-      .style("opacity", .9);
-    div.html("Ahri <br/>" + "Level : " + d.level + "<br/>" + d["stats.attackdamage"])
-      .style("left", (event.pageX) + "px")
-      .style("top", (event.pageY - 28) + "px");
-    })
-  .on("mouseout", function(d) {
-    div.transition()
-      .duration(500)
-      .style("opacity", 0);
-    });
+        .data(statDict["Ahri"])
+        .enter().append("circle")
+        .attr("r", 5)
+        .attr("cx", function(d) { return x(d.level) })
+        .attr("cy", function(d) { return y(d[selectedValue]) })
+        .attr("id", "dots")
+        .on("mouseover", function(event,d) {
+            div.transition()
+            .duration(200)
+            .style("opacity", .9);
+            div.html("Ahri <br/>" + "Level : " + d.level + "<br/>" + d[selectedValue])
+            .style("left", (event.pageX) + "px")
+            .style("top", (event.pageY - 28) + "px");
+        })
+        .on("mouseout", function(d) {
+            div.transition()
+            .duration(500)
+            .style("opacity", 0);
+        });
         
 
 // Add the X Axis
 let xAxis = svg.append("g")
         .attr("transform","translate(0,"+ height +")")
-        .call(d3.axisBottom(x));
+        .call(d3.axisBottom(x).ticks(18));
         
 // Add the Y Axis
 yAxis = svg.append("g").call(d3.axisLeft(y));
 
-let calcHeight = y(statDict["Ahri"][17][selectedValue])+ namePosH
+svg.append("g")
+      .attr("class", "grid")
+      .call(d3.axisLeft(y).ticks(12)
+          .tickSize(-width)
+          .tickFormat("")
+      )
+
+//calculate name label's Y position
+let calcPosY = y(statDict["Ahri"][17][selectedValue])+ namePosH
 
 svg.append("text")
-		.attr("transform", "translate(" + (width-namePosW) + "," + calcHeight + ")")
+		.attr("transform", "translate(" + (width-namePosW) + "," + calcPosY + ")")
 		.attr("dy", ".35em")
         .attr("id", "name1")
 		.attr("text-anchor", "start")
 		.style("fill", "var(--bs-orange)")
 		.text("Ahri");
 
-let calcHeight2 = y(statDict["Garen"][17][selectedValue]) + namePosH
+let calcPosY2 = y(statDict["Garen"][17][selectedValue]) + namePosH
 
-	svg.append("text")
-		.attr("transform", "translate(" + (width-namePosW) + "," + calcHeight2 + ")")
-		.attr("dy", ".35em")
-        .attr("id", "name2")
-		.attr("text-anchor", "start")
-		.style("fill", "var(--bs-cyan)")
-		.text("Garen");
+svg.append("text")
+    .attr("transform", "translate(" + (width-namePosW) + "," + calcPosY2 + ")")
+    .attr("dy", ".35em")
+    .attr("id", "name2")
+    .attr("text-anchor", "start")
+    .style("fill", "var(--bs-cyan)")
+    .text("Garen");
 
-        if (window.screen.width > 768) {
-  svg.append("text")
-  .attr("transform", "rotate(-90)")
-  .attr("y", 0 - margin.left)
-  .attr("x",0 - (height / 2))
-  .attr("dy", "1em")
-  .style("text-anchor", "middle")
-  .text("Value");
-        }
+// Add texts only on computer
+if (window.screen.width > 768) {
+    svg.append("text")
+        .attr("transform", "rotate(-90)")
+        .attr("y", 0 - margin.left)
+        .attr("x",0 - (height / 2))
+        .attr("dy", "1em")
+        .style("text-anchor", "middle")
+        .text("Value");
+}
 
-  svg.append("text")             
-      .attr("transform",
+svg.append("text")             
+    .attr("transform",
             "translate(" + (width/2) + " ," + 
                            (height + margin.top + 20) + ")")
-      .style("text-anchor", "middle")
-      .text("Level");
+    .style("text-anchor", "middle")
+    .text("Level");
 
 
-    autocomplete(document.getElementById("myInput"), names);
-    autocomplete(document.getElementById("myInput2"), names);
+autocomplete(document.getElementById("myInput"), names);
+autocomplete(document.getElementById("myInput2"), names);
+createBarChart()
 });
 
-
+// Create a new line with the selected champion 1
 function showChampionStats(){
     let champName
     if (document.getElementById("myInput").value) {
-        champName = document.getElementById("myInput").value
+        if (names.includes(document.getElementById("myInput").value)) {
+            champName = document.getElementById("myInput").value
+        } else {
+            alert("This champion does not exist.")
+            champName = lastSelectChamp1
+        
+        }
+
+        
     } else {
         champName = lastSelectChamp1
     }
     
-// if a non-empty string has been submitted
-
     lastSelectChamp1 = champName
-    var existingResult = true
 
     let selectedChamp = getChampionStats(champName)
-    console.log(selectedChamp.name)
 
+    // change img and text
     document.getElementById("ChampionSelected1").src = "../ChampionIcons/" + selectedChamp.name + ".png"
     document.getElementById("champName1").innerHTML = selectedChamp.name
 
-    const rbs = document.querySelectorAll('input[name="inlineRadioOptions"]');
-    for (const rb of rbs) {
-        if (rb.checked) {
-            selectedValue = rb.value;
-            break;
-        }
-    }
+    checkRadioValue()
 
     removeDots()
 
+    // Change y domain
     y.domain([0, domains[selectedValue]]);
-
     yAxis.transition().duration(1000).call(d3.axisLeft(y))
 
     
+    // change the lines
+    var valueline3 = d3
+    .line()
+    .x(function(d) {return x(d.level); })
+    .y(function(d) {return y(d[selectedValue]); });
+
+    svg.select("path#line1")
+    .data([statDict[lastSelectChamp1]])
+    .transition()
+    .duration(1000)
+    .attr("class","line")
+    .attr("d", valueline3);
+
+    svg.select("path#line2")
+    .data([statDict[lastSelectChamp2]])
+    .transition()
+    .duration(1000)
+    .attr("class","line")
+    .attr("d", valueline3);
+
+    // calculate name label's Y position
+    let calcPosY = y(statDict[lastSelectChamp2][17][selectedValue]) + namePosH
+    let calcPosY2 = y(statDict[champName][17][selectedValue]) + namePosH
+
+    if (window.screen.width < 768 && calcPosY < calcPosY2) {
+        calcPosY -= 70
+    } 
+    else if (window.screen.width < 768 && calcPosY > calcPosY2) {
+        calcPosY2 -= 70
+    }
+
+    svg.select("text#name1")
+		.attr("transform", "translate(" + (width-namePosW) + "," + calcPosY + ")")
+		.attr("dy", ".35em")
+		.attr("text-anchor", "start")
+		.style("fill", "var(--bs-orange)")
+		.text(lastSelectChamp2);
+
+
+	svg.select("text#name2")
+		.attr("transform", "translate(" + (width-namePosW) + "," + calcPosY2 + ")")
+		.attr("dy", ".35em")
+		.attr("text-anchor", "start")
+		.style("fill", "var(--bs-cyan)")
+		.text(champName);
+
+    createNewDots(lastSelectChamp1, lastSelectChamp2)
+    
+}
+
+function showChampionStats2(){
+    let champName
+    if (document.getElementById("myInput2").value) {
+        if (names.includes(document.getElementById("myInput2").value)) {
+            champName = document.getElementById("myInput2").value
+        } else {
+            alert("This champion does not exist.")
+            champName = lastSelectChamp2
+        }
+   
+    } else {
+        champName = lastSelectChamp2
+    }
+
+    lastSelectChamp2 = champName
+
+    let selectedChamp = getChampionStats(champName)
+
+    document.getElementById("ChampionSelected2").src = "../ChampionIcons/" + selectedChamp.name + ".png"
+    document.getElementById("champName2").innerHTML = selectedChamp.name
+
+    checkRadioValue()
+
+    removeDots()
 
     var valueline3 = d3
     .line()
@@ -281,42 +424,34 @@ function showChampionStats(){
     .attr("class","line")
     .attr("d", valueline3);
 
-    let calcHeight = y(statDict[lastSelectChamp2][17][selectedValue]) + namePosH
-    let calcHeight2 = y(statDict[champName][17][selectedValue]) + namePosH
+    let calcPosY = y(statDict[champName][17][selectedValue]) + namePosH
+    let calcPosY2 = y(statDict[lastSelectChamp1][17][selectedValue]) + namePosH
 
-    if (window.screen.width < 768 && calcHeight < calcHeight2) {
-        calcHeight -= 70
-    } 
-    else if (window.screen.width < 768 && calcHeight > calcHeight2) {
-        calcHeight2 -= 70
+    if (window.screen.width < 768 && calcPosY < calcPosY2) {
+        calcPosY -= 70
+    } else if (calcPosY > calcPosY2 && window.screen.width < 768) {
+        calcPosY2 -= 70
     }
 
     svg.select("text#name1")
-		.attr("transform", "translate(" + (width-namePosW) + "," + calcHeight + ")")
+		.attr("transform", "translate(" + (width-namePosW) + "," + calcPosY + ")")
 		.attr("dy", ".35em")
 		.attr("text-anchor", "start")
 		.style("fill", "var(--bs-orange)")
-		.text(lastSelectChamp2);
+		.text(champName);
 
+        
 
 	svg.select("text#name2")
-		.attr("transform", "translate(" + (width-namePosW) + "," + calcHeight2 + ")")
+		.attr("transform", "translate(" + (width-namePosW) + "," + calcPosY2 + ")")
 		.attr("dy", ".35em")
 		.attr("text-anchor", "start")
 		.style("fill", "var(--bs-cyan)")
-		.text(champName);
-
-    createNewDots(lastSelectChamp1, lastSelectChamp2)
-    // make the DIV where the search result appears visible
-    //var x = document.getElementById("searchResult")
-    //if (x.style.display === 'none') {
-    //    x.style.display = 'block'
-    //    existingResult = false
-    //}
- 
-
+		.text(lastSelectChamp1);
     
+    createNewDots(lastSelectChamp1, lastSelectChamp2)
 }
+
 
 function removeDots(){
     svg.selectAll("circle")
@@ -327,8 +462,6 @@ function createNewDots(name, name2){
 
         checkRadioValue()
 
-    
-        
     circle = svg.selectAll("circle")
             .data(statDict[name])
             .enter().append("circle")
@@ -376,10 +509,78 @@ function createNewDots(name, name2){
               dot.transition().duration(1000)
 }
 
+
+function createBars() {
+    //TODO
+    //getLevel()
+    getChampionStats(lastSelectChamp1)
+    getChampionStats(lastSelectChamp2)
+    // Normalize the data -> sum of each group must be 100!
+    let champ1 = statDict[lastSelectChamp1]
+
+    console.log("champ1 ", champ1)
+    let champ2 = statDict[lastSelectChamp2]
+    let barData = []
+
+    for (var i=0; i < 6; i++) {
+        let barDataDict = {}
+        let tot = parseInt(champ1[0][statName[i]]) + parseInt(champ2[0][statName[i]])
+        console.log("tot", tot)
+        let champ1perc = parseInt(champ1[0][statName[i]])/parseInt(tot) * 100
+        let champ2perc = parseInt(champ2[0][statName[i]])/parseInt(tot) * 100
+        barDataDict["group"] = statName[i]
+        barDataDict["champ1"] = champ1perc
+        barDataDict["champ2"] = champ2perc
+        barData.push(barDataDict)
+
+    }
+
+// Adapted code from https://www.d3-graph-gallery.com/graph/barplot_stacked_percent.html
+// List of subgroups = header of the csv files = soil condition here
+const subgroups = ["champ1", "champ2"]
+// List of groups = species here = value of the first column called group -> I show them on the X axis
+const groups = statName
+console.log(groups)
+
+// Normalize the data -> sum of each group must be 100!
+console.log(barData)
+const color = d3.scaleOrdinal()
+    .domain(subgroups)
+    .range(['var(--bs-cyan)','var(--bs-orange)'])
+
+//stack the data? --> stack per subgroup
+const stackedData = d3.stack()
+.keys(subgroups)
+(barData)
+console.log("stcked data",stackedData)
+
+// Show the bars
+// Show the bars
+chartSvg.append("g")
+.selectAll("g")
+// Enter in the stack data = loop key per key = group per group
+.data(stackedData)
+.join("g")
+  .attr("fill", d => color(d.key))
+  .selectAll("rect")
+  // enter a second time = loop subgroup per subgroup to add all rectangles
+  .data(d => d)
+  .join("rect")
+  .transition().duration(1000)
+  .attr("class", "bar")
+    .attr("y", d => chartY(d.data.group))
+    .attr("x", d => chartX(d[0]))
+    .attr("width", d => chartX(d[1]) - chartX(d[0]))
+    .attr("height",chartY.bandwidth())
+}
+
+
+
 function radioAction(){
     removeDots()
     showChampionStats()
     showChampionStats2()
+    createBars()
 }
 
 function checkRadioValue(){
@@ -392,86 +593,6 @@ function checkRadioValue(){
         }
 }
 
-function showChampionStats2(){
-    let champName
-    if (document.getElementById("myInput2").value) {
-        champName = document.getElementById("myInput2").value
-    } else {
-        champName = lastSelectChamp2
-    }
-    
-    
-    // if a non-empty string has been submitted
-
-    lastSelectChamp2 = champName
-    var existingResult = true
-
-    let selectedChamp = getChampionStats(champName)
-    console.log(selectedChamp.name)
-
-    document.getElementById("ChampionSelected2").src = "../ChampionIcons/" + selectedChamp.name + ".png"
-    document.getElementById("champName2").innerHTML = selectedChamp.name
-
-    checkRadioValue()
-
-    removeDots()
-
-    var valueline3 = d3
-    .line()
-    .x(function(d) {return x(d.level); })
-    .y(function(d) {return y(d[selectedValue]); });
-
-    svg.select("path#line1")
-    .data([statDict[lastSelectChamp1]])
-    .transition()
-    .duration(1000)
-    .attr("class","line")
-    .attr("d", valueline3);
-
-    svg.select("path#line2")
-    .data([statDict[lastSelectChamp2]])
-    .transition()
-    .duration(1000)
-    .attr("class","line")
-    .attr("d", valueline3);
-
-    let calcHeight = y(statDict[champName][17][selectedValue]) + namePosH
-    let calcHeight2 = y(statDict[lastSelectChamp1][17][selectedValue]) + namePosH
-
-    if (window.screen.width < 768 && calcHeight < calcHeight2) {
-        calcHeight -= 70
-    } else if (calcHeight > calcHeight2 && window.screen.width < 768) {
-        calcHeight2 -= 70
-    }
-
-    svg.select("text#name1")
-		.attr("transform", "translate(" + (width-namePosW) + "," + calcHeight + ")")
-		.attr("dy", ".35em")
-		.attr("text-anchor", "start")
-		.style("fill", "var(--bs-orange)")
-		.text(champName);
-
-        
-
-	svg.select("text#name2")
-		.attr("transform", "translate(" + (width-namePosW) + "," + calcHeight2 + ")")
-		.attr("dy", ".35em")
-		.attr("text-anchor", "start")
-		.style("fill", "var(--bs-cyan)")
-		.text(lastSelectChamp1);
-    
-    createNewDots(lastSelectChamp1, lastSelectChamp2)
-
-    // make the DIV where the search result appears visible
-    //var x = document.getElementById("searchResult")
-    //if (x.style.display === 'none') {
-    //    x.style.display = 'block'
-    //    existingResult = false
-    //}
-
-    
-}
-
 function getChampionStats(champion) {
     for (var i=0; i < myData.length; i++) {
         if (myData[i].name === champion) {
@@ -481,8 +602,7 @@ function getChampionStats(champion) {
     }
 }
 
-
-//
+// calculate stats per level
 function statPerLevel(data, myStat, statPerLevel, dict) {
     let statPerLevelValue = 0
     let statList = []
@@ -490,22 +610,31 @@ function statPerLevel(data, myStat, statPerLevel, dict) {
         for (var i=0; i < 18; i++) {
             let stat = new Object()
             statPerLevelValue = +data[myStat] + (i * +data[statPerLevel])
-            armorPerLevelValue = +data["stats.armor"] + (i * +data["stats.armorperlevel"])
-            healthPerLevelValue = +data["stats.hp"] + (i * +data["stats.hpperlevel"])
-            stat[myStat] = statPerLevelValue.toFixed(2)
-            stat["armor"] = armorPerLevelValue.toFixed(2)
-            stat["health"] = healthPerLevelValue.toFixed(2)
+            armorPerLevel = +data["stats.armor"] + (i * +data["stats.armorperlevel"])
+            healthPerLevel = +data["stats.hp"] + (i * +data["stats.hpperlevel"])
+            manaPerLevel = +data["stats.mp"] + (i * +data["stats.mpperlevel"])
+            magicResistPerLevel = +data["stats.spellblock"] + (i * +data["stats.spellblockperlevel"])
+            hpRegenPerLevel = +data["stats.hpregen"] + (i * +data["stats.hpregenperlevel"])
+            mpRegenPerLevel = +data["stats.mpregen"] + (i * +data["stats.mpregenperlevel"])
+            critPerLevel = +data["stats.crit"] + (i * +data["stats.critperlevel"])
+            attackSpeedPerLevel = +data["stats.attackspeed"] + (i * +data["stats.attackspeedperlevel"])
+            stat["Attack Damage"] = statPerLevelValue.toFixed(2)
+            stat["Health"] = healthPerLevel.toFixed(2)
+            stat["Mana"] = manaPerLevel.toFixed(2)
+            stat["Armor"] = armorPerLevel.toFixed(2)
+            stat["Magic Resist"] = magicResistPerLevel.toFixed(2)
+            stat["HP Regen"] = hpRegenPerLevel.toFixed(2)
+            stat["MP Regen"] = mpRegenPerLevel.toFixed(2)
+            stat["Crit. Damage"] = critPerLevel.toFixed(2)
+            stat["Attack Speed"] = attackSpeedPerLevel.toFixed(2)
             stat["level"] = i + 1
-            //console.log(att)
+
             statList.push(stat)
             
         }
-        //statList.push(att)
         dict[data.name] = statList 
 
   }
-
-
   
 // Search champion per name
 function autocomplete(input, array) {
@@ -574,6 +703,7 @@ function autocomplete(input, array) {
             } else {
                 // simulate a click on the search button
                 document.getElementById("searchButton").click();
+                document.getElementById("searchButton2").click();
             }
         }
     });
@@ -610,55 +740,3 @@ function autocomplete(input, array) {
         closeAllLists(e.target);
     });
 }
-
-
-
-/*
-let mp = []
-
-
-
-lol_data = d3.csv("riot_champion.csv", function(data){
-    return {
-        name : data.name,
-        tags : data.tags,
-        key : +data.key
-    }
-}).then(data => {
-    for (var i = 1; i < data.length; i++) {
-        value = data[i]['stats.mp']
-        //console.log(data[i]['name'])
-        mp.push(parseInt(value))
-    
-    }
-    console.log("data", data)
-})
-
-console.log("promise",lol_data)
-
-let corps = d3.select('body');
-
-let canvas = corps.append('svg')
-    .attr("width", 600)
-    .attr("height", 600)
-
-
-
-
-  
-
-async function create_circles(){
-    setTimeout(()=>{
-        d3.select(".chart")
-            .selectAll("div")
-            .data(lol_data)
-                .enter()
-                .append("div")
-                .style("width", function(d) { return d.keys + "px"; })
-                .text(function(d) { return d.name; });
-        console.log("inside timeout"); 
-    },5000);
-
-}
-
-create_circles(); */

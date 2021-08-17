@@ -8,14 +8,13 @@
     <link rel="icon" href="data:;base64,iVBORw0KGgo=" type="image/x-icon">
 </head>
 <nav class="navbar">
-  <h1>League of Legends Champion Stats</h1>
+  <h1>League of Legends Champions Stats</h1>
 </nav>
 <body>
   <div id="champDiv">
     <div id="champ1">
       <h2 id="champName1">Garen</h2>
       <img src="../championIcons/Garen.png" alt="ChampionSelected1" width="120" height="120" id="ChampionSelected1">
-      <br>
       <form autocomplete="off" action="/action_page.php">
         <div class="autocomplete" style="width:140px;">
           <input id="myInput" type="text" name="myChampion" placeholder="Champion 1">
@@ -26,10 +25,7 @@
     <div id="champ2">
       <h2 id="champName2">Ahri</h2>
       
-      <img src="../championIcons/Ahri.png" alt="ChampionSelected2" width="120" height="120" id="ChampionSelected2"> 
-      
-      <br>
-      
+      <img src="../championIcons/Ahri.png" alt="ChampionSelected2" width="120" height="120" id="ChampionSelected2">
       <form autocomplete="off" action="/action_page.php">
         <div class="autocomplete" style="width:140px;">
           <input id="myInput2" type="text" name="myChampion2" placeholder="Champion 2">
@@ -38,19 +34,32 @@
       </form>
     </div>
   </div>
-    <br>
-  <div class="column">
-    <div class="form-check form-check-inline">
-      <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio1" onclick="radioAction()" value="stats.attackdamage" checked>
+  <div class="column" id="my_dataviz"></div>
+  <div class="column" id="form-check">
+    <div class="form-check-inline">
+      <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio1" onclick="radioAction()" value="Attack Damage" checked>
       <label class="form-check-label" for="inlineRadio1">Attack Damage</label>
     </div>
-    <div class="form-check form-check-inline">
-      <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio2" onclick="radioAction()" value="armor">
+    <div class="form-check-inline">
+      <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio2" onclick="radioAction()" value="Armor">
       <label class="form-check-label" for="inlineRadio2">Armor</label>
     </div>
-    <div class="form-check form-check-inline">
-      <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio3" onclick="radioAction()" value="health">
-      <label class="form-check-label" for="inlineRadio3">Health</label>
+    <div class="form-check-inline">
+      <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio3" onclick="radioAction()" value="Health">
+      <label class="form-check-label" for="inlineRadio3">Health Points</label>
+    </div>
+    <br>
+    <div class="form-check-inline">
+      <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio3" onclick="radioAction()" value="Mana">
+      <label class="form-check-label" for="inlineRadio3">Mana Points</label>
+    </div>
+    <div class="form-check-inline">
+      <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio3" onclick="radioAction()" value="Magic Resist">
+      <label class="form-check-label" for="inlineRadio3">Magic Resistance</label>
+    </div>
+    <div class="form-check-inline">
+      <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio3" onclick="radioAction()" value="HP Regen">
+      <label class="form-check-label" for="inlineRadio3">Health Regen</label>
     </div>
   </div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/6.6.1/d3.min.js" ></script>

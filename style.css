@@ -6,6 +6,16 @@
   stroke-width:2px;
 }
 
+.grid line {
+  stroke: lightgrey; 
+  stroke-opacity: 0.7; 
+  shape-rendering: crispEdges;
+}
+
+.grid path { 
+  stroke-width: 0;
+}
+
 #champDiv {
   text-align: center;
   margin: 0 auto;
@@ -15,9 +25,11 @@
 /* Style the top navigation bar */
 .navbar {
   width: 100%;
+  font-size: 32px;
   overflow: hidden;
-  background-color: #333;
   margin-bottom: 5px;
+  background-image: url("bg.webp");
+  background-position: center;
 }
 
 .navbar h1 {
@@ -31,11 +43,26 @@
   text-align: center;
 }
 
+body{
+  font-family: 'Verdana', sans-serif;
+  grid-template-rows: 1fr 50px;
+  background: linear-gradient(to bottom,#010d21, #08234f);
+}
+
+
 .column {   
   padding: 5px;
   background-color: var(--bs-white);
   margin: 0 auto;
-  width: 65%;
+  width: 60%;
+}
+
+#form-check {
+  text-align: center;
+}
+
+.form-check-inline {
+  display: inline-block;
 }
 
 #champ1 {
@@ -74,7 +101,7 @@ h2 {
 }
 
 #circles {
-  fill: var(--bs-gray-dark);
+  fill: var(--bs-gray);
 }
 
 #dots {
@@ -102,10 +129,7 @@ div.tooltip {
 }
 
 * { box-sizing: border-box; }
-body {
-  font-family: Arial;
-  background: var(--bs-gray);
-}
+
 
 
 .autocomplete {
