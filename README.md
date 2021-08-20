@@ -1,9 +1,9 @@
 # League of Legends Champions Statistics
 
 ## Description
-This web app helps visualise and compare [LoL](https://euw.leagueoflegends.com/en-gb/) champions' base statistics using [D3](https://d3js.org/)
+This web app helps visualise and compare [LoL](https://euw.leagueoflegends.com/en-gb/) champions' base statistics using Mike Bostock's JavaScript library [D3](https://d3js.org/)
 
-This project was developped in the context of Isaac Pante's course "Visualisation de données" at the Université de Lausanne (UNIL). The outcome of the project can be viewed here: [github.io](https://astonedf.github.io/) 
+This project was developped in the context of Isaac Pante's course "Visualisation de données" at the Université de Lausanne. The project can be viewed here: [github.io](https://astonedf.github.io/) 
 
 ## Database
 
@@ -17,14 +17,16 @@ Every champion in League of Legends has base stats that change as they level up 
 
 - `Attack Damage`
 - `Health`
-- `Mana` (some champions do not have mana)
+- `Mana` (some champions do not use mana)
 - `Armor`
 - `Magic Resistance` (often shortened to MR or here Magic Resist)
 - `Health Regeneration` (HP Regen)
 - `Mana Regeneration`
 
-There are many other base stats as well (movement speed for example) but they do not increase with levels and therefore I decided not to compare them. The raw data (csv) only gives the base stat: `100 health points` for example and the stat per level `10 health points per level` so the value for each level was calculated with a function (statPerLevel()).
+Explained in detail here: [Fandom](https://leagueoflegends.fandom.com/wiki/Champion_statistic)
 
+There are many other base stats as well (`Movement Speed` for example) but they do not increase with levels and therefore I decided not to compare them. 
+The raw data (csv) only gives the base stat: `100 health points` for example and the stat per level `10 health points per level` so the value for each level was calculated with a function (statPerLevel()) giving the stat value for each level.
 
 ## Interface
 
@@ -39,6 +41,12 @@ There are many other base stats as well (movement speed for example) but they do
 **Line graph** : Shows the selected base stat value at every level. Sometimes a champion might have a higher base stat at level 1 than another champion but a lower stat per level and the line graph helps to see if a champion will catch up or even end up having a higher base stat at some point.
 
 ![capture3](/img/lineGraph.png)
+
+## Copyrights
+
+All images belong to Riot Games Inc but can be used as intellectual property.
+Found on LoL [Fandom](https://leagueoflegends.fandom.com/wiki/Category:Images_copyrighted_to_Riot_Games) page:
+![copyrights](img/copyright.png)
 
 ## Author
 
