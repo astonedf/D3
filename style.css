@@ -16,6 +16,10 @@
   stroke-width: 0;
 }
 
+.labels {
+  word-wrap: break-word;
+}
+
 #champDiv {
   text-align: center;
   margin: 0 auto;
@@ -28,13 +32,14 @@
   font-size: 32px;
   overflow: hidden;
   margin-bottom: 5px;
-  background-image: url("bg.webp");
-  background-position: center;
+  background-color: #010711;
+  background-position: 0%, 40%;
 }
 
 .navbar h1 {
   color: #f2f2f2;
   text-align: center;
+  text-shadow: 6px 6px 0px rgba(0,0,0,0.3);
   padding: 14px 16px;
   text-decoration: none;
 }
@@ -43,18 +48,26 @@
   text-align: center;
 }
 
+#my_dataviz {
+  padding-left: 40px;
+}
+
 body{
   font-family: 'Verdana', sans-serif;
   grid-template-rows: 1fr 50px;
   background: linear-gradient(to bottom,#010d21, #08234f);
 }
 
+#searchButton, #searchButton2 {
+  background-color: #08234f;
+}
 
 .column {   
   padding: 5px;
   background-color: var(--bs-white);
   margin: 0 auto;
   width: 60%;
+  border-radius: 3px;
 }
 
 #form-check {
@@ -65,7 +78,7 @@ body{
   display: inline-block;
 }
 
-#champ1 {
+#champ1, #champ2 {
   height: 210px;
   margin: 5px;
   vertical-align: top;
@@ -76,16 +89,6 @@ body{
   background-color: var(--bs-white);
 }
 
-#champ2 {
-  height: 210px;
-  margin: 5px;
-  vertical-align: top;
-  display: inline-block;
-  box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 2px 6px 2px;
-  border-radius: 3px;
-  padding: 5px;
-  background-color: var(--bs-white);
-}
 
 h2 {
   margin: 2px;
@@ -207,6 +210,7 @@ footer {
   .navbar h1 {
     font-size: 18px;
     color: #f2f2f2;
+    text-shadow: 6px 6px 0px rgba(0,0,0,0.2);
     text-align: center;
     text-decoration: none;
     padding: 5px;

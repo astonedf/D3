@@ -5,7 +5,7 @@ let statDict = {}
 let levels = new Array(19).keys()
 let lastSelectChamp1 = "Garen"
 let lastSelectChamp2 = "Ahri"
-let domains = {"Attack Damage": 150, "Armor": 120, "Health": 2200, "Mana": 1200, "Magic Resist": 60, "HP Regen": 24 }
+let domains = {"Attack Damage": 150, "Armor": 120, "Magic Resist": 60, "Health": 2200, "Mana": 1200, "HP Regen": 24, "MP Regen": 60}
 let statName = Object.keys(domains)
 let yAxis
 let circle
@@ -44,6 +44,8 @@ var margin = {top:20, right:marginRight, bottom:30, left:marginLeft},
     width = sizeX - margin.left - margin.right, height = sizeY - margin.top - margin.bottom;
 
 function createBarChart() {
+    var margin = {top:30, right:10, bottom:10, left:marginLeft + 30},
+    width = sizeX - 25 - margin.left - margin.right, height = sizeY - margin.top - margin.bottom;
     // append the svg object to the body of the page
     chartSvg = d3.select("#my_dataviz")
     .append("svg")
@@ -51,6 +53,7 @@ function createBarChart() {
     .attr("height", height + margin.top + margin.bottom)
     .append("g")
     .attr("transform", `translate(${margin.left},${margin.top})`);
+    chartSvg.append("g")
 
     const subgroups = ["champ1", "champ2"]
 // List of groups = species here = value of the first column called group -> I show them on the X axis
@@ -69,8 +72,13 @@ console.log(groups)
     .domain(groups)
     .range([0, height])
     .padding([0.2])
-    chartSvg.append("g")
-    .call(d3.axisLeft(chartY));
+    leftAxis = chartSvg.append("g")
+    .call(d3.axisLeft(chartY))
+
+    if (window.screen.width < 768) {
+        leftAxis.selectAll("text").attr("transform", "rotate(45)");
+    }
+    
 
     // add the X gridlines
     chartSvg.append("g")
@@ -91,7 +99,7 @@ console.log(groups)
     // Normalize the data -> sum of each group must be 100!
     let champ1 = statDict[lastSelectChamp1]
 
-    console.log("champ1 ", champ1)
+    //console.log("champ1 ", champ1)
     let champ2 = statDict[lastSelectChamp2]
     let barData = []
 
@@ -107,7 +115,7 @@ console.log(groups)
         barData.push(barDataDict)
 
     }
-    console.log(barData)
+    //console.log(barData)
     
     
     //stack the data? --> stack per subgroup
@@ -115,7 +123,7 @@ console.log(groups)
     .keys(subgroups)
     (barData)
 
-    
+    createBars()
     
 }
 
@@ -177,6 +185,21 @@ d3.csv("riot_champion.csv").then(function(data) {
     // creates a list of the champion names
     names = data.map(function(d) {return d.name; })
 
+    // Add the X Axis
+let xAxis = svg.append("g")
+.attr("transform","translate(0,"+ height +")")
+.call(d3.axisBottom(x).ticks(18));
+
+// Add the Y Axis
+yAxis = svg.append("g").call(d3.axisLeft(y));
+
+svg.append("g")
+.attr("class", "grid")
+.call(d3.axisLeft(y).ticks(12)
+  .tickSize(-width)
+  .tickFormat("")
+)
+
     // Add the valueline 
     svg.append("path")
         .attr("id", "line1")
@@ -236,20 +259,7 @@ d3.csv("riot_champion.csv").then(function(data) {
         });
         
 
-// Add the X Axis
-let xAxis = svg.append("g")
-        .attr("transform","translate(0,"+ height +")")
-        .call(d3.axisBottom(x).ticks(18));
-        
-// Add the Y Axis
-yAxis = svg.append("g").call(d3.axisLeft(y));
 
-svg.append("g")
-      .attr("class", "grid")
-      .call(d3.axisLeft(y).ticks(12)
-          .tickSize(-width)
-          .tickFormat("")
-      )
 
 //calculate name label's Y position
 let calcPosY = y(statDict["Ahri"][17][selectedValue])+ namePosH
@@ -377,7 +387,7 @@ function showChampionStats(){
 		.text(champName);
 
     createNewDots(lastSelectChamp1, lastSelectChamp2)
-    
+    createBars()
 }
 
 function showChampionStats2(){
@@ -450,6 +460,7 @@ function showChampionStats2(){
 		.text(lastSelectChamp1);
     
     createNewDots(lastSelectChamp1, lastSelectChamp2)
+    createBars()
 }
 
 
@@ -522,7 +533,7 @@ function createBars() {
     let champ2 = statDict[lastSelectChamp2]
     let barData = []
 
-    for (var i=0; i < 6; i++) {
+    for (var i=0; i < statName.length; i++) {
         let barDataDict = {}
         let tot = parseInt(champ1[0][statName[i]]) + parseInt(champ2[0][statName[i]])
         console.log("tot", tot)
@@ -552,11 +563,10 @@ const color = d3.scaleOrdinal()
 const stackedData = d3.stack()
 .keys(subgroups)
 (barData)
-console.log("stcked data",stackedData)
+//console.log("stacked data",stackedData)
 
 // Show the bars
-// Show the bars
-chartSvg.append("g")
+chartSvg.select("g")
 .selectAll("g")
 // Enter in the stack data = loop key per key = group per group
 .data(stackedData)
@@ -580,7 +590,6 @@ function radioAction(){
     removeDots()
     showChampionStats()
     showChampionStats2()
-    createBars()
 }
 
 function checkRadioValue(){
@@ -625,8 +634,8 @@ function statPerLevel(data, myStat, statPerLevel, dict) {
             stat["Magic Resist"] = magicResistPerLevel.toFixed(2)
             stat["HP Regen"] = hpRegenPerLevel.toFixed(2)
             stat["MP Regen"] = mpRegenPerLevel.toFixed(2)
-            stat["Crit. Damage"] = critPerLevel.toFixed(2)
-            stat["Attack Speed"] = attackSpeedPerLevel.toFixed(2)
+            // TODO % per level
+            //stat["Attack Speed"] = attackSpeedPerLevel.toFixed(2)
             stat["level"] = i + 1
 
             statList.push(stat)
