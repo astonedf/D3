@@ -3,7 +3,7 @@
 ## Description
 This web app helps visualise and compare [LoL](https://euw.leagueoflegends.com/en-gb/) champions' base statistics using [D3](https://d3js.org/)
 
-This project developped in the context of Isaac Pante's course "Visualisation de données" at the Université de Lausanne (UNIL). The outcome of the project can be viewed here: (github.io)[https://astonedf.github.io/] 
+This project developped in the context of Isaac Pante's course "Visualisation de données" at the Université de Lausanne (UNIL). The outcome of the project can be viewed here: [github.io](https://astonedf.github.io/) 
 
 ## Database
 
