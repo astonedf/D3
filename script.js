@@ -165,10 +165,7 @@ let svg = d3
     .append("g").attr("transform","translate("+ margin.left +","+ margin.top +")");
 
 // Get the data and draws the first example (Garen vs. Ahri)
-d3.csv("riot_champion.csv").then(function(data) {
-
-   
-    
+d3.csv("data/riot_champion.csv").then(function(data) {
 
     myData = data
     // format the data

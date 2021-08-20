@@ -21,12 +21,12 @@ Every champion in League of Legends has base stats that change as they level up 
 - `Armor`
 - `Magic Resistance` (often shortened to MR or here Magic Resist)
 - `Health Regeneration` (HP Regen)
-- `Mana Regeneration`
+- `Mana Regeneration` (MP Regen)
 
 Explained in detail here: [Fandom](https://leagueoflegends.fandom.com/wiki/Champion_statistic)
 
 There are many other base stats as well (`Movement Speed` for example) but they do not increase with levels and therefore I decided not to compare them. 
-The raw data (csv) only gives the base stat: `100 health points` for example and the stat per level `10 health points per level` so the value for each level was calculated with a function (statPerLevel()) giving the stat value for each level.
+The raw data (csv) only gives the base stat: `100 health points` for example and the stat per level `10 health points per level` so the value for each level was calculated with a function (`statPerLevel()`) giving the stat value for each level.
 
 ## Interface
 
@@ -44,9 +44,11 @@ The raw data (csv) only gives the base stat: `100 health points` for example and
 
 ## Copyrights
 
-All images belong to Riot Games Inc but can be used as intellectual property.
+All images belong to Riot Games Inc but can be used as intellectual property.\
 Found on LoL [Fandom](https://leagueoflegends.fandom.com/wiki/Category:Images_copyrighted_to_Riot_Games) page:
 ![copyrights](img/copyright.png)
+
+Favicon from [favicon-generator](https://www.favicon-generator.org/search/DARK_BLUE/Squares)
 
 ## Author
 
