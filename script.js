@@ -5,7 +5,7 @@ let statDict = {}
 let levels = new Array(19).keys()
 let lastSelectChamp1 = "Garen"
 let lastSelectChamp2 = "Ahri"
-let domains = {"Attack Damage": 150, "Armor": 120, "Magic Resist": 60, "Health": 2200, "Mana": 1200, "HP Regen": 24, "MP Regen": 60}
+let domains = {"Attack Damage": 150, "Armor": 120, "Magic Resist": 60, "Health": 2200, "Mana": 1500, "HP Regen": 24, "MP Regen": 60}
 let statName = Object.keys(domains)
 let yAxis
 let circle
@@ -20,6 +20,8 @@ let namePosW
 let chartSvg
 let chartX
 let chartY
+let champ1lvl
+let champ2lvl
 
 // set different sizes and position depending on screen size (computer or mobile)
 if (window.screen.width > 768) {
@@ -39,95 +41,15 @@ if (window.screen.width > 768) {
     marginRight = 50
 }
 
+
+
+checkRadioValue()
+getInputLevels()
+
+
 // set the dimensions and margins of the graph
 var margin = {top:20, right:marginRight, bottom:30, left:marginLeft},
     width = sizeX - margin.left - margin.right, height = sizeY - margin.top - margin.bottom;
-
-function createBarChart() {
-    var margin = {top:30, right:10, bottom:10, left:marginLeft + 30},
-    width = sizeX - 25 - margin.left - margin.right, height = sizeY - margin.top - margin.bottom;
-    // append the svg object to the body of the page
-    chartSvg = d3.select("#my_dataviz")
-    .append("svg")
-    .attr("width", width + margin.left + margin.right)
-    .attr("height", height + margin.top + margin.bottom)
-    .append("g")
-    .attr("transform", `translate(${margin.left},${margin.top})`);
-    chartSvg.append("g")
-
-    const subgroups = ["champ1", "champ2"]
-// List of groups = species here = value of the first column called group -> I show them on the X axis
-const groups = statName
-console.log(groups)
-
-    // Add X axis
-    chartX = d3.scaleLinear()
-    .domain([0, 100])
-    .range([ 0, width ]);
-    chartSvg.append("g")
-    .call(d3.axisTop(chartX));
-
-    // Add Y axis
-    chartY = d3.scaleBand()
-    .domain(groups)
-    .range([0, height])
-    .padding([0.2])
-    leftAxis = chartSvg.append("g")
-    .call(d3.axisLeft(chartY))
-
-    if (window.screen.width < 768) {
-        leftAxis.selectAll("text").attr("transform", "rotate(45)");
-    }
-    
-
-    // add the X gridlines
-    chartSvg.append("g")
-    .attr("class", "grid")
-    .call(d3.axisTop(chartX).ticks(10)
-        .tickSize(-height)
-        .tickFormat("")
-    )
-
-    // color palette = one color per subgroup
-    const color = d3.scaleOrdinal()
-    .domain(subgroups)
-    .range(['var(--bs-cyan)','var(--bs-orange)'])
-    
-    // Normalize the data -> sum of each group must be 100!
-    getChampionStats(lastSelectChamp1)
-    getChampionStats(lastSelectChamp2)
-    // Normalize the data -> sum of each group must be 100!
-    let champ1 = statDict[lastSelectChamp1]
-
-    //console.log("champ1 ", champ1)
-    let champ2 = statDict[lastSelectChamp2]
-    let barData = []
-
-    for (var i=0; i < 6; i++) {
-        let barDataDict = {}
-        let tot = parseInt(champ1[0][statName[i]]) + parseInt(champ2[0][statName[i]])
-        console.log("tot", tot)
-        let champ1perc = parseInt(champ1[0][statName[i]])/parseInt(tot) * 100
-        let champ2perc = parseInt(champ2[0][statName[i]])/parseInt(tot) * 100
-        barDataDict["group"] = statName[i]
-        barDataDict["champ1"] = champ1perc
-        barDataDict["champ2"] = champ2perc
-        barData.push(barDataDict)
-
-    }
-    //console.log(barData)
-    
-    
-    //stack the data? --> stack per subgroup
-    const stackedData = d3.stack()
-    .keys(subgroups)
-    (barData)
-
-    createBars()
-    
-}
-
-checkRadioValue()
 
 // set the ranges
 let x = d3.scaleLinear().range([0,width - 30]);
@@ -303,6 +225,63 @@ autocomplete(document.getElementById("myInput2"), names);
 createBarChart()
 });
 
+
+function createBarChart() {
+
+    var margin = {top:32, right:10, bottom:10, left:marginLeft + 30},
+    width = sizeX - 25 - margin.left - margin.right, height = sizeY - margin.top - margin.bottom;
+    // append the svg object to the body of the page
+    chartSvg = d3.select("#my_dataviz")
+    .append("svg")
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
+    .append("g")
+    .attr("transform", `translate(${margin.left},${margin.top})`);
+    chartSvg.append("g")
+
+    const subgroups = ["champ1", "champ2"]
+// List of groups = species here = value of the first column called group -> I show them on the X axis
+const groups = statName
+console.log(groups)
+
+    // Add X axis
+    chartX = d3.scaleLinear()
+    .domain([0, 100])
+    .range([ 0, width ]);
+    chartSvg.append("g")
+    .call(d3.axisTop(chartX));
+
+    // Add Y axis
+    chartY = d3.scaleBand()
+    .domain(groups)
+    .range([0, height])
+    .padding([0.2])
+    leftAxis = chartSvg.append("g")
+    .call(d3.axisLeft(chartY))
+
+    if (window.screen.width < 768) {
+        leftAxis.selectAll("text").attr("transform", "rotate(45)");
+    }
+    
+
+    // add the X gridlines
+    chartSvg.append("g")
+    .attr("class", "grid")
+    .call(d3.axisTop(chartX).ticks(10)
+        .tickSize(-height)
+        .tickFormat("")
+    )
+
+    // color palette = one color per subgroup
+    const color = d3.scaleOrdinal()
+    .domain(subgroups)
+    .range(['var(--bs-cyan)','var(--bs-orange)'])
+    
+
+    createBars()
+    
+}
+
 // Create a new line with the selected champion 1
 function showChampionStats(){
     let champName
@@ -386,6 +365,7 @@ function showChampionStats(){
     createNewDots(lastSelectChamp1, lastSelectChamp2)
     createBars()
 }
+
 
 function showChampionStats2(){
     let champName
@@ -532,13 +512,15 @@ function createBars() {
 
     for (var i=0; i < statName.length; i++) {
         let barDataDict = {}
-        let tot = parseInt(champ1[0][statName[i]]) + parseInt(champ2[0][statName[i]])
+        let tot = parseInt(champ1[champ1lvl-1][statName[i]]) + parseInt(champ2[champ2lvl-1][statName[i]])
         console.log("tot", tot)
-        let champ1perc = parseInt(champ1[0][statName[i]])/parseInt(tot) * 100
-        let champ2perc = parseInt(champ2[0][statName[i]])/parseInt(tot) * 100
+        let champ1perc = parseInt(champ1[champ1lvl-1][statName[i]])/parseInt(tot) * 100
+        let champ2perc = parseInt(champ2[champ2lvl-1][statName[i]])/parseInt(tot) * 100
         barDataDict["group"] = statName[i]
         barDataDict["champ1"] = champ1perc
         barDataDict["champ2"] = champ2perc
+        barDataDict["stat1"] = champ1[champ1lvl-1][statName[i]]
+        barDataDict["stat2"] = champ2[champ2lvl-1][statName[i]]
         barData.push(barDataDict)
 
     }
@@ -579,14 +561,23 @@ chartSvg.select("g")
     .attr("x", d => chartX(d[0]))
     .attr("width", d => chartX(d[1]) - chartX(d[0]))
     .attr("height",chartY.bandwidth())
+
 }
 
-
+function getInputLevels(){
+    champ1lvl = document.getElementById("champ1lvl").value
+    champ2lvl = document.getElementById("champ2lvl").value
+}
 
 function radioAction(){
     removeDots()
     showChampionStats()
     showChampionStats2()
+}
+
+function levelAction(){
+    getInputLevels()
+    createBars()
 }
 
 function checkRadioValue(){
@@ -641,6 +632,44 @@ function statPerLevel(data, myStat, statPerLevel, dict) {
         dict[data.name] = statList 
 
   }
+
+  // press enter on lvl input
+
+document.getElementById("champ1lvl").addEventListener("keyup", function(event) {
+    if (event.keyCode === 13) {
+        if (document.getElementById("champ1lvl").value > 18) {
+            document.getElementById("champ1lvl").value = 18
+            levelAction()
+            return false;
+        } else if (document.getElementById("champ1lvl").value < 0) {
+            document.getElementById("champ1lvl").value = 1
+            levelAction()
+            return false;
+        } else {
+            levelAction()
+            return false;
+        }
+    }
+});
+
+
+
+document.getElementById("champ2lvl").addEventListener("keyup", function(event) {
+    if (event.keyCode === 13) {
+        if (document.getElementById("champ2lvl").value > 18) {
+            document.getElementById("champ2lvl").value = 18
+            levelAction()
+            return false;
+        } else if (document.getElementById("champ2lvl").value < 0) {
+            document.getElementById("champ2lvl").value = 1
+            levelAction()
+            return false;
+        } else {
+            levelAction()
+            return false;
+        }
+    }
+});
   
 // Search champion per name
 function autocomplete(input, array) {

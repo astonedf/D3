@@ -3,7 +3,7 @@
 ## Description
 This web app helps visualise and compare [LoL](https://euw.leagueoflegends.com/en-gb/) champions' base statistics using Mike Bostock's JavaScript library [D3](https://d3js.org/).
 
-This project was developped in the context of Isaac Pante's course "Visualisation de données" at the Université de Lausanne. The project can be viewed here: [astonedf.github.io](https://astonedf.github.io/).
+This project was developped in the context of Isaac Pante's course "Visualisation de données" in Spring 2021 at the Université de Lausanne. The project can be viewed here: [astonedf.github.io](https://astonedf.github.io/).
 
 ## Database
 
@@ -38,9 +38,14 @@ The raw data (csv) only gives the base stat: `100 health points` for example and
 
 ![capture2](/img/barplot.png)
 
-**Line graph** : Shows the selected base stat value at every level. Sometimes a champion might have a higher `base stat` at level 1 than another champion but a lower `stat per level` and the line graph helps to see if a champion will catch up or even end up having a higher `base stat` at some point.
+**Line graph** : Shows the selected base stat value at every level. Sometimes a champion might have a higher `base stat` at level 1 than another champion but a lower `stat per level` and the line graph helps to see if a champion will catch up or even end up having a higher `base stat` at some point. You can hover your mouse over the dots to get the level and the value.
 
 ![capture3](/img/lineGraph.png)
+
+**Mobile** : The app works on most mobile screens (not optimised for screens that are less than 375px wide)
+
+![capture4](img/phone1.png)
+![capture5](img/phone2.png)
 
 ## Copyrights
 

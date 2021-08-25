@@ -16,9 +16,6 @@
   stroke-width: 0;
 }
 
-.labels {
-  word-wrap: break-word;
-}
 
 #champDiv {
   text-align: center;
@@ -46,9 +43,22 @@
   text-align: center;
 }
 
+
 #my_dataviz {
   padding-left: 40px;
 }
+
+.quantity input {
+  width: 60px;
+  height: 30px;
+  display: inline-block;
+  padding: 5px;
+}
+
+#champ1lvl {
+  margin-right: 50%;
+}
+
 
 body{
   font-family: 'Verdana', sans-serif;
@@ -60,7 +70,7 @@ body{
   background-color: #08234f;
 }
 
-.column {   
+.column {
   padding: 5px;
   background-color: var(--bs-white);
   margin: 0 auto;
@@ -87,10 +97,19 @@ body{
   background-color: var(--bs-white);
 }
 
-
 h2 {
   margin: 2px;
   font-size: 22px;
+}
+
+h3 {
+  display: inline;
+  margin: 2px;
+  font-size: 22px;
+}
+
+.level1 {
+  margin-left: 5%;
 }
 
 #champName1 {
@@ -190,6 +209,12 @@ footer {
 
 @media only screen and (max-width: 768px) {
   /* For mobile phones: */
+  #my_dataviz {
+    padding-left: 0px;
+  }
+  #champ1lvl {
+    margin-right: 5%;
+  }
   .column {
     width: 100%;
   }
