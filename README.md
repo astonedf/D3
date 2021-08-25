@@ -3,11 +3,11 @@
 ## Description
 This web app helps visualise and compare [LoL](https://euw.leagueoflegends.com/en-gb/) champions' base statistics using Mike Bostock's JavaScript library [D3](https://d3js.org/).
 
-This project was developped in the context of Isaac Pante's course "Visualisation de données" in Spring 2021 at the Université de Lausanne. The project can be viewed here: [astonedf.github.io](https://astonedf.github.io/).
+This project was developped in the context of Isaac Pante's course "Visualisation de données" in Spring 2021 at the Université de Lausanne. The project can be viewed here: [astonedf.github.io](https://astonedf.github.io/)
 
 ## Database
 
-You can find details about the base stats of every champion in the game itself or the game's wiki [Fandom](https://leagueoflegends.fandom.com/wiki/List_of_champions/Base_statistics) but I found a downloadable csv version on [kaggle](https://www.kaggle.com/gyejr95/league-of-legendslol-champion-and-item-2020?select=riot_champion.csv) of the patch 10.6.1 which I use to create the graphs.
+You can find details about the base stats of every champion in the game itself or the game's [Fandom](https://leagueoflegends.fandom.com/wiki/List_of_champions/Base_statistics) wiki, but I found a downloadable csv version on [kaggle](https://www.kaggle.com/gyejr95/league-of-legendslol-champion-and-item-2020?select=riot_champion.csv) of the patch 10.6.1 which I use to create the graphs.
 
 Since the champion stats are constantly changing (in order to balance the game), in the future I'd like to link the app to the [Official League of Legends API](https://developer.riotgames.com/docs/lol#_getting-started) so that the data would be up to date.
 
@@ -30,7 +30,7 @@ The raw data (csv) only gives the base stat: `100 health points` for example and
 
 ## Interface
 
-**Champion selection** : You can choose two champions you want compare and search them by name.
+**Champion selection** : You can choose two champions you want compare by searching them by name and selecting their levels.
 
 ![capture1](/img/champions.png)
 
@@ -38,9 +38,9 @@ The raw data (csv) only gives the base stat: `100 health points` for example and
 
 ![capture2](/img/barplot.png)
 
-**Line graph** : Shows the selected base stat value at every level. Sometimes a champion might have a higher `base stat` at level 1 than another champion but a lower `stat per level` and the line graph helps to see if a champion will catch up or even end up having a higher `base stat` at some point. You can hover your mouse over the dots to get the level and the value.
+**Line graph** : Shows the selected base stat value at every level. Sometimes a champion might have a higher `base stat` at level 1 than another champion but a lower `stat per level` and the line graph helps to see if a champion will catch up or even end up having a higher `base stat` at some point. You can hover over the dots to get the level and the value.
 
-![capture3](/img/lineGraph.png)
+![capture3](/img/lineGraph2.png)
 
 **Mobile** : The app works on most mobile screens (not optimised for screens that are less than 375px wide)
 
