@@ -7,7 +7,9 @@ This project was developped in the context of Isaac Pante's course "Visualisatio
 
 ## Database
 
-You can find details about the base stats of every champion in the game itself or the game's [Fandom](https://leagueoflegends.fandom.com/wiki/List_of_champions/Base_statistics) wiki, but I found a downloadable csv version on [kaggle](https://www.kaggle.com/gyejr95/league-of-legendslol-champion-and-item-2020?select=riot_champion.csv) of the patch 10.6.1 which I use to create the graphs.
+The game League of Legends has over 150 playable champions with different base stats, abilities, strengths and weaknesses. Even though it might be easy to find information on each champion either in the game itself or any website for example the game's [Fandom](https://leagueoflegends.fandom.com/wiki/List_of_champions/Base_statistics) wiki, none of them offer a way to quickly compare and visualise base stats.
+
+I found a downloadable csv version on [kaggle](https://www.kaggle.com/gyejr95/league-of-legendslol-champion-and-item-2020?select=riot_champion.csv) of the patch 10.6.1 which I use to create the graphs.
 
 Since the champion stats are constantly changing (in order to balance the game), in the future I'd like to link the app to the [Official League of Legends API](https://developer.riotgames.com/docs/lol#_getting-started) so that the data would be up to date.
 
