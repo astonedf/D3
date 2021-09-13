@@ -52,8 +52,7 @@ The raw data (csv) only gives the base stat: `100 health points` for example and
 ## Copyrights
 
 All images belong to Riot Games Inc but can be used as intellectual property.\
-Found on LoL [Fandom](https://leagueoflegends.fandom.com/wiki/Category:Images_copyrighted_to_Riot_Games) page:
-![copyrights](img/copyright.png)
+More details on the [Fandom](https://leagueoflegends.fandom.com/wiki/Category:Images_copyrighted_to_Riot_Games) page.
 
 Favicon from [favicon-generator](https://www.favicon-generator.org/search/DARK_BLUE/Squares)
 

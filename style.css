@@ -46,6 +46,7 @@
 
 #my_dataviz {
   padding-left: 40px;
+  padding-right: 2px;
 }
 
 .quantity input {
@@ -64,6 +65,7 @@ body{
   font-family: 'Verdana', sans-serif;
   grid-template-rows: 1fr 50px;
   background: linear-gradient(to bottom,#010d21, #08234f);
+  margin: 0 auto;
 }
 
 #searchButton, #searchButton2 {
@@ -74,7 +76,7 @@ body{
   padding: 5px;
   background-color: var(--bs-white);
   margin: 0 auto;
-  width: 60%;
+  width: 800px;
   border-radius: 3px;
 }
 
